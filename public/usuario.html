@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./Css/style.css">
+</head>
+<body>
+    <h1>Bienvenido, <span id="nombreUsuario"></span>¡</h1>
+    <!-- boton para desplegar servicios -->
+     <button id="btnDesplegarServios">Desplegar servicios</button>
+     <!-- contenedor para mostrar los servicios del usuario -->
+      <div id="servicios-container">
+        <form id="formularioSeleccionServicio">
+     <h2>servicios del usuario</h2>
+     <table id="tabla-servicios">
+        <thead>
+            <tr>
+                <th>servicios</th>
+                <th>Seleccionar</th>
+            </tr>
+        </thead>
+        <tbody id="lista-servicios"></tbody>
+     </table>
+     
+     <input type="datetime-local"  id="fechaHora" name="fechaHora" required>
+     <button type="submit">Guardar servicios</button>
+    </form>
+    </div>
+
+    <button id="btnDesplegarServiciosGuardados">Desplegar servicios guardados</button>
+    <!-- contenedor para mostrar los servicios guaardados -->
+    <div id="servicios-guardados-container" style="display: none;">
+        <h2>servicios guardados</h2>
+        <table id="tabla-servicios-guardados">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Servicio</th>
+                </tr>
+            </thead>
+            <tbody id="lista-servicio-guardados"></tbody>
+        </table>
+    </div>
+    
+    <!-- boton para cerrar sesion -->
+    <button id="btnCerrarSesion">Cerrar sesion</button>
+    <script>
+        document.addEventListener('DOMContentLoaded',()=>{
+            
+            //obtener el nombre del usuario
+            const xhrNombreUsuario=new XMLHttpRequest()
+            xhrNombreUsuario.open('GET','/obtener-usuario',true)
+            xhrNombreUsuario.onreadystatechange=function(){
+                if(xhrNombreUsuario.readyState===4){
+                    if(xhrNombreUsuario.status===200){
+                        const usuario=JSON.parse(xhrNombreUsuario.responseText)
+                        document.getElementById('nombreUsuario').textContent=usuario
+                    }
+                    else{
+                        console.error('No se pudo poner el usuario')
+                    }
+
+                }
+            }
+        })
+</script>
+</body>
+</html>

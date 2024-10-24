@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./Css/style.css">
+</head>
+<body>
+    <div class="containerRegistro">
+
+        <form class="formulario" action="http://localhost:3000/crear" method="post">
+            <h1>Registre sus datos</h1>
+            <label for="Nombre">Nombre</label>
+            <input type="text" id="Nombre" name="Nombre" required>
+    
+            <label for="Tipo">Tipo de documento</label>
+            <select name="Tipo" id="TD">
+                <option value="TI">TI</option>
+                <option value="CC">CC</option>
+            </select>
+            
+            <label for="Documento">Documento</label>
+            <select name="Man" id="TD">
+                <option value="1">Bosa</option>
+                <option value="2">Suba</option>
+                <option value="3">Chapinero</option>
+            </select>
+    
+            <button class="boton" type="submit">Enviar</button>
+            <a href="index.html"><button class="boton" type="button">Atras</button></a>
+        </form>
+    </div>
+    
+</body>
+</html>

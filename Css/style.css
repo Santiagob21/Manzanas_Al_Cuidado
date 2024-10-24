@@ -1,0 +1,11 @@
+.containerRegistro{
+    background-color: bisque;
+    padding: 5%;
+}
+h1{
+     font-size: 35px;
+}
+input{
+    width: 30%;
+    margin-left: 45% ;
+}
