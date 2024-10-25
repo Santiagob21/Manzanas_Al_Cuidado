@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="./Css/style.css">
+    <link rel="stylesheet" href="../Css/style.css">
 </head>
 <body>
     <h1>Bienvenido, <span id="nombreUsuario"></span>¡</h1>
@@ -56,7 +56,7 @@
                 if(xhrNombreUsuario.readyState===4){
                     if(xhrNombreUsuario.status===200){
                         const usuario=JSON.parse(xhrNombreUsuario.responseText)
-                        document.getElementById('nombreUsuario').textContent=usuario
+                        document.getElementById('nombreUsuario').textContent=usuario.Nombre
                     }
                     else{
                         console.error('No se pudo poner el usuario')
@@ -64,6 +64,9 @@
 
                 }
             }
+            xhrNombreUsuario.send()
+
+
         })
 </script>
 </body>

@@ -25,7 +25,7 @@ const db= {
     host:'localhost',
     user:'root',
     password:'',
-    database:'manzanasdelcuidado'
+    database:'MANZANAS_DEL_CUIDADO'
 }
 
 // Registrar usuario
@@ -33,15 +33,15 @@ app.post('/crear',async (req,res)=>{
     const {Nombre,Tipo,Documento,Man}=req.body
     try{
         //verificar el usuario
-        const conect=  await mysql12.createConnection(db)
-        const [veri]= await db.query('SELECT * FROM usuario WHERE Documento=? AND Tipo=?', [Documento, Tipo,])
+        const conect=  await mysql2.createConnection(db)
+        const [veri]= await conect.execute('SELECT * FROM usuario WHERE Documento=? AND Tipo=?', [Documento, Tipo])
 
         if(verify.length>0){
             res.status(409).send(`
                 <script>
                 window.onload=function(){
                 alert("usuario ya existe")
-                window.location.href='./inicio.html'
+                window.location.href='../inicio.html'
                 }
                 </script>
                 `)
@@ -53,7 +53,7 @@ app.post('/crear',async (req,res)=>{
                 <script>
                 window.onload=function(){
                 alert("Datos guardados")
-                window.location.href='/inicio.html'
+                window.location.href='../inicio.html'
                 }
                 </script>
                 `)
@@ -73,16 +73,16 @@ app.post('/iniciar',async (req, res)=>{
     const {Tipo,Documento}=req.body
     try{
         const conect=  await mysql12.createConnection(db)
-        const [datos]=await conect.execute('SELECT * usuario WHERE Documento=?', [Tipo, Documento])
+        const [datos]=await conect.execute('SELECT * FROM usuario WHERE Documento=? AND Tipo=?', [Tipo, Documento])
         console.log(datos)
         if (datos.length>0){
-            const [man]=await conect.execute('SELECT manzanas.Nombre FROM usuario INNER JOIN manzanas ON usuario.Id_M WHERE usuario.Nombre=?',[datos[0].Nombre])
+            //const [man]=await conect.execute('SELECT manzanas.Nombre FROM usuario INNER JOIN manzanas ON usuario.Id_M WHERE usuario.Nombre=?',[datos[0].Nombre])
             req.session.usuario=datos[0].Nombre
             req.session.Documento=Documento
             const usuario={nombre: datos[0].Nombre}
             res.locals.usuario.usuario=usuario
             res.locals.Documento=Documento
-            res.sendFile(path.join(__dirname,'usuario.html'))
+            res.sendFile(path.join(__dirname,'../ingreso.html'))
             await conect.end()
         }
         else{
