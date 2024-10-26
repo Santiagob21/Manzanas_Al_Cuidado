@@ -13,7 +13,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `manzanas` (
   `id_manzana` int(5) NOT NULL AUTO_INCREMENT,
-  `Nombre_manzana` varchar(30) DEFAULT NULL,
+  `Nombre` varchar(30) DEFAULT NULL,
   `Localidad` varchar(30) DEFAULT NULL,
   `Direccion_manzana` text DEFAULT NULL,
   PRIMARY KEY (`id_manzana`)
@@ -51,7 +51,7 @@ CREATE TABLE `solicitudes` (
 
 CREATE TABLE `usuario` (
   `id_mujer` int(5) NOT NULL AUTO_INCREMENT,
-  `Tipo_documento` varchar(30) DEFAULT NULL,
+  `Tipo` varchar(30) DEFAULT NULL,
   `Documento` varchar(10) DEFAULT NULL,
   `Nombres` varchar(30) DEFAULT NULL,
   `Apellidos` varchar(30) DEFAULT NULL,
@@ -71,5 +71,4 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
 

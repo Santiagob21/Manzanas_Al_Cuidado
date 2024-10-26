@@ -36,7 +36,7 @@ app.post('/crear',async (req,res)=>{
         const conect=  await mysql2.createConnection(db)
         const [veri]= await conect.execute('SELECT * FROM usuario WHERE Documento=? AND Tipo=?', [Documento, Tipo])
 
-        if(verify.length>0){
+        if(veri.length>0){
             res.status(409).send(`
                 <script>
                 window.onload=function(){
@@ -72,7 +72,7 @@ app.post('/crear',async (req,res)=>{
 app.post('/iniciar',async (req, res)=>{
     const {Tipo,Documento}=req.body
     try{
-        const conect=  await mysql12.createConnection(db)
+        const conect=  await mysql2.createConnection(db)
         const [datos]=await conect.execute('SELECT * FROM usuario WHERE Documento=? AND Tipo=?', [Tipo, Documento])
         console.log(datos)
         if (datos.length>0){
