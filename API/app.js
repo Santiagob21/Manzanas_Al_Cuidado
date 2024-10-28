@@ -1,9 +1,9 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const mysql2 = require('mysql2/promise')
-const path= require('path')
-const moment=require('moment')
-const session=require('express-session')
+const express = require('express') //para crear servidor 
+const bodyParser = require('body-parser') //mildware para analizar el cuerpo de solicitudes 
+const mysql2 = require('mysql2/promise') // conceccion y promesas de sql 
+const path= require('path') //para manejo de rutas 
+const moment=require('moment') //biblioteca para manejar fechas y horas 
+const session=require('express-session') //middleware para manejar sesiones de usuario 
 const { connect }=require ('http2')
 const app=express()
 
@@ -29,44 +29,39 @@ const db= {
 }
 
 // Registrar usuario
-app.post('/crear',async (req,res)=>{
-    const {Nombre,Tipo,Documento,Man}=req.body
-    try{
-        //verificar el usuario
-        const conect=  await mysql2.createConnection(db)
-        const [veri]= await conect.execute('SELECT * FROM usuario WHERE Documento=? AND Tipo=?', [Documento, Tipo])
 
-        if(veri.length>0){
+app.post('/crear', async (req, res) => {
+    const { Nombre, Tipo, Documento, Man } = req.body;
+    try {
+        const conect = await mysql2.createConnection(db);
+        const [veri] = await conect.execute('SELECT * FROM usuario WHERE Documento=? AND Tipo=?', [Documento, Tipo]);
+
+        if (veri.length > 0) {
             res.status(409).send(`
                 <script>
                 window.onload=function(){
-                alert("usuario ya existe")
-                window.location.href='../inicio.html'
+                    alert("Usuario ya existe");
+                    window.location.href='../inicio.html';
                 }
                 </script>
-                `)
-        }
-    
-        else{
-            await conect.execute('INSERT INTO usuario (Nombre,Tipo,Documento,Id_M1) VALUES (?,?,?,?)',[Nombre, Tipo, Documento, Man])
+                `);
+        } else {
+            await conect.execute('INSERT INTO usuario (Nombre, Tipo, Documento, Id_M1) VALUES (?, ?, ?, ?)', [Nombre, Tipo, Documento, Man]);
             res.status(201).send(`
                 <script>
                 window.onload=function(){
-                alert("Datos guardados")
-                window.location.href='../inicio.html'
+                    alert("Datos guardados");
+                    window.location.href='../inicio.html';
                 }
                 </script>
-                `)
+                `);
         }
-                 await conect.end()
-    }
-
-    catch(error){
-        console.error('Error en el servidor:',error)
+        await conect.end();
+    } catch (error) {
+        console.error('Error en el servidor:', error);
         res.status(500).send('Error en el servidor');
     }
-    
- })
+});
 
  //enviar pagina usuario
 app.post('/iniciar',async (req, res)=>{
