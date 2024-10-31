@@ -1,3 +1,4 @@
+-- SQLBook: Code
 CREATE DATABASE MANZANAS_DEL_CUIDADO;
 
 USE MANZANAS_DEL_CUIDADO;
@@ -17,6 +18,12 @@ CREATE TABLE manzanas (
   Localidad varchar(30) DEFAULT NULL,
   Direccion_manzana VARCHAR(30) DEFAULT NULL
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO manzanas (Id_M, Nombre, Localidad, Direccion_manzana) VALUES( 1, 'Bosa' ,'Bosa', 'direccion 1')
+
+INSERT INTO manzanas (Id_M, Nombre, Localidad, Direccion_manzana) VALUES( 2, 'Suba' ,'Suba', 'direccion 2')
+
+INSERT INTO manzanas (Id_M, Nombre, Localidad, Direccion_manzana) VALUES( 3, 'Chapinero' ,'Chapinero', 'direccion 3')
 
 CREATE TABLE servicios (
   id_servicio int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -58,9 +65,17 @@ CREATE TABLE usuario (
   FOREIGN KEY (Id_M1) REFERENCES manzanas (Id_M)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
  
+
+SELECT * FROM manzanas 
+
+SELECT * FROM usuario
+
+
+

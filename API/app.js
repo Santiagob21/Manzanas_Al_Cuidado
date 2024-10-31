@@ -68,20 +68,22 @@ app.post('/iniciar',async (req, res)=>{
     const {Tipo,Documento}=req.body
     try{
         const conect=  await mysql2.createConnection(db)
-        const [datos]=await conect.execute('SELECT * FROM usuario WHERE Documento=? AND Tipo=?', [Tipo, Documento])
+        const [datos]=await conect.execute('SELECT * FROM usuario WHERE  Tipo=? AND Documento=?', [Tipo, Documento])
         console.log(datos)
         if (datos.length>0){
             //const [man]=await conect.execute('SELECT manzanas.Nombre FROM usuario INNER JOIN manzanas ON usuario.Id_M WHERE usuario.Nombre=?',[datos[0].Nombre])
             req.session.usuario=datos[0].Nombre
             req.session.Documento=Documento
             const usuario={nombre: datos[0].Nombre}
-            res.locals.usuario.usuario=usuario
+            res.locals.usuario=usuario
             res.locals.Documento=Documento
-            res.sendFile(path.join(__dirname,'../ingreso.html'))
+            res.sendFile(path.join(__dirname,'../public/usuario.html'))
+            console.log(__dirname)
             await conect.end()
+            
         }
         else{
-            res.status(401).send('paila')
+            res.sendFile(path.join(__dirname, '../public/ingreso.html'))
         }
         await conect.end()
     }
@@ -104,10 +106,6 @@ app.get('/obtener-usuario',(req, res)=>{
 app.listen(3000, ()=>{
     console.log('Servidor Node.js escuchando')
 })
-
-
-
-
 
 
 
