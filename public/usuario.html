@@ -48,7 +48,12 @@
     <button id="btnCerrarSesion">Cerrar sesion</button>
     <script>
         document.addEventListener('DOMContentLoaded',()=>{
-            
+
+            //creacion de variable 
+            const serviciosContainer = document.getElementById('servicios-container')
+            const tablaServicios =document.getElementById('tabla-servicios-guardados')
+            const listaServicios = document.getElementById('')
+            const botonDesplegarServicios = document.getElementById('btnDesplegarServios')
             //obtener el nombre del usuario
             const xhrNombreUsuario=new XMLHttpRequest()
             xhrNombreUsuario.open('GET','/obtener-usuario',true)
@@ -65,7 +70,30 @@
                 }
             }
             xhrNombreUsuario.send()
-
+            btnDesplegarServicios.addListener('click',()=>{
+            const xhrobtener=new XMLHttpRequest()
+            xhrobtener.open('POST','/obtener-servicios-usuario',true)
+            xhrobtener.setRequestHeader('content-Type','application/json')
+            xhrobtener.onreadystatechange=funtion()={
+                if((xhrobtener.readyState===4) && (xhrobtener.status===200)){
+                 const data = JSON.parse(xhrobtener.responseText)
+                    listaServicios.innerHTML=''
+                    data.servicios.forEach(servicio => {
+                        const row =document.createElement('tr')
+                        row.innerHTML=´
+                        <td>${servicio}</td>
+                        <td><input type="checkbox" name ="servicios" value="${servicios}"></td>
+                        ´
+                    listaServicios.appendChild(row)
+                    })
+                    serviciosContainer.style.display='block'
+                }
+                else{
+                    console.error('no se puede cargar los servicios')
+                }
+            }
+            xhhrobtener.send()
+            })
 
         })
 </script>
