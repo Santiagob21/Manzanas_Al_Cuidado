@@ -1,4 +1,4 @@
-const express = require('express') //para crear servidor 
+ const express = require('express') //para crear servidor 
 const bodyParser = require('body-parser') //mildware para analizar el cuerpo de solicitudes 
 const mysql2 = require('mysql2/promise') // conceccion y promesas de sql 
 const path= require('path') //para manejo de rutas 
@@ -108,7 +108,7 @@ app.post('/obtener-servicios-usuario',async (req, res)=>{
     const usuario=req.session.usuario
     try{
         const conect = await mysql2.createConnection(db)
-        //consulta para obtener el nombre de los servicios asociados a la manzana del usuario
+        //consulta para obtener el nombre de los servicios asociados a la manzana del usuario mediante el documeento o el nombre
         const [datos] = await conect.execute('SELECT servicios.Nombre FROM servicios  INNER JOIN manzana_servicios ON manzanas_servicios.Id_ServiciosINNER JOIN manzanas ON manzanas.Id_M=usuario')
         console.log(datos)
         res.json({servicios: datos.map(hijo=>hijo.Nombre)})
