@@ -102,6 +102,23 @@ app.get('/obtener-usuario',(req, res)=>{
         res.status(401).send('Usuario no autenticado')
     }
 })
+//obtener usuario
+app.post('/obtener-servicios-usuario',async (req, res)=>{
+
+    const usuario=req.session.usuario
+    try{
+        const conect = await mysql2.createConnection(db)
+        //consulta para obtener el nombre de los servicios asociados a la manzana del usuario
+        const [datos] = await conect.execute('SELECT servicios.Nombre FROM servicios  INNER JOIN manzana_servicios ON manzanas_servicios.Id_ServiciosINNER JOIN manzanas ON manzanas.Id_M=usuario')
+        console.log(datos)
+        res.json({servicios: datos.map(hijo=>hijo.Nombre)})
+        await conect.end()    
+    }
+    cath{
+          console.error('Error en el servidor:',error)
+        res.status(500).send('Error en el servidor');
+    }
+}
 // Apertura del servidor
 app.listen(3000, ()=>{
     console.log('Servidor Node.js escuchando')
