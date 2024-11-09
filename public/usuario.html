@@ -52,7 +52,7 @@
             //creacion de variable 
             const serviciosContainer = document.getElementById('servicios-container')
             const tablaServicios =document.getElementById('tabla-servicios-guardados')
-            const listaServicios = document.getElementById('')
+            const listaServicios = document.getElementById('lista-servicio-guardados')
             const botonDesplegarServicios = document.getElementById('btnDesplegarServios')
             //obtener el nombre del usuario
             const xhrNombreUsuario=new XMLHttpRequest()
@@ -92,10 +92,44 @@
                     console.error('no se puede cargar los servicios')
                 }
             }
-            xhhrobtener.send()
+            xhrobtener.send()
+            })
+
+            //evento para enviar los servicios de Seleccionar
+            const formularioSeleccionServicio=documento.getElementById('formularioSeleccionServicio')
+            formularioSeleccionServicio.addEventListener('submit',async(event)=>{
+                event.preventDefault()
+                const serviciosSeleccionados=arry.from(formularioSeleccionServicio.
+                elements['servicios']).filter(checkbox=>checkbox.checked)
+                .map(checkbox=>checkbox.value)
+                const fh=formularioSeleccionServicio.elements['fechaHora'].value
+
+                const xhrguardarservicio=new XMLHttpRequest()
+                xhrguardarservicio.open('POST','/obtener-servicios-usuario',true)
+                xhrguardarservicio.setRequestHeader('content-Type','application/json')
+                xhrguardarservicio.onreadystatechange=funtion()={
+                    if((xhrguardarservicio.readyState===4) && (xhrguar.status===200)){
+                     alert('servicios guardados')
+                     window.location.reload()
+
+                       
+                    }
+                    else{
+                        console.error('no se puede cargar los servicios')
+                    }
+                }
+                xhrguardarservicio.send(JSON.stringify({
+                    servicios: serviciosSeleccionados,
+                    fechaHora: fh
+                }))
+
+                })
             })
 
         })
 </script>
 </body>
 </html>
+
+<!-- consulta bbdd
+id servicio y id usuario  -->

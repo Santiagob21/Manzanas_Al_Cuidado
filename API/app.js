@@ -103,7 +103,7 @@ app.get('/obtener-usuario',(req, res)=>{
     }
 })
 //obtener usuario
-app.post('/obtener-servicios-usuario',async (req, res)=>{
+app.post('../public/usuario.html/obtener-servicios-usuario',async (req, res)=>{
 
     const usuario=req.session.usuario
     try{
@@ -114,11 +114,17 @@ app.post('/obtener-servicios-usuario',async (req, res)=>{
         res.json({servicios: datos.map(hijo=>hijo.Nombre)})
         await conect.end()    
     }
-    cath{
-          console.error('Error en el servidor:',error)
+    catch{
+        console.error('Error en el servidor:',error)
         res.status(500).send('Error en el servidor');
     }
-}
+})
+//enviar servicios
+app.post('../public/usuario.html/guardar-servicios-usuario',async (req,res)=>{
+ const usuario=req.session.usuario
+ const Documento=req.session.Documento
+ const {servicios,fechaHora}=req.body
+})
 // Apertura del servidor
 app.listen(3000, ()=>{
     console.log('Servidor Node.js escuchando')
