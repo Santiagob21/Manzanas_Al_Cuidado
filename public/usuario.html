@@ -9,12 +9,12 @@
 <body>
     <h1>Bienvenido, <span id="nombreUsuario"></span>¡</h1>
     <!-- boton para desplegar servicios -->
-     <button id="btnDesplegarServios">Desplegar servicios</button>
-     <!-- contenedor para mostrar los servicios del usuario -->
-      <div id="servicios-container">
+    <button id="btnDesplegarServios">Desplegar servicios</button>
+    <!-- contenedor para mostrar los servicios del usuario -->
+    <div id="servicios-container">
         <form id="formularioSeleccionServicio">
-     <h2>servicios del usuario</h2>
-     <table id="tabla-servicios">
+    <h2>servicios del usuario</h2>
+    <table id="tabla-servicios">
         <thead>
             <tr>
                 <th>servicios</th>
@@ -22,10 +22,10 @@
             </tr>
         </thead>
         <tbody id="lista-servicios"></tbody>
-     </table>
-     
-     <input type="datetime-local"  id="fechaHora" name="fechaHora" required>
-     <button type="submit">Guardar servicios</button>
+    </table>
+    
+    <input type="datetime-local"  id="fechaHora" name="fechaHora" required>
+    <button type="submit">Guardar servicios</button>
     </form>
     </div>
 
@@ -69,21 +69,21 @@
 
                 }
             }
-            xhrNombreUsuario.send()
+            xhrNombreUsuario.send() //obtener servicio
             btnDesplegarServicios.addListener('click',()=>{
             const xhrobtener=new XMLHttpRequest()
             xhrobtener.open('POST','/obtener-servicios-usuario',true)
             xhrobtener.setRequestHeader('content-Type','application/json')
-            xhrobtener.onreadystatechange=funtion()={
+            xhrobtener.onreadystatechange=function(){
                 if((xhrobtener.readyState===4) && (xhrobtener.status===200)){
-                 const data = JSON.parse(xhrobtener.responseText)
+                const data = JSON.parse(xhrobtener.responseText)
                     listaServicios.innerHTML=''
                     data.servicios.forEach(servicio => {
                         const row =document.createElement('tr')
-                        row.innerHTML=´
+                        row.innerHTML=`
                         <td>${servicio}</td>
                         <td><input type="checkbox" name ="servicios" value="${servicios}"></td>
-                        ´
+                        `
                     listaServicios.appendChild(row)
                     })
                     serviciosContainer.style.display='block'
@@ -96,23 +96,22 @@
             })
 
             //evento para enviar los servicios de Seleccionar
-            const formularioSeleccionServicio=documento.getElementById('formularioSeleccionServicio')
+            const formularioSeleccionServicio=document.
+            getElementById('formularioSeleccionServicio')
             formularioSeleccionServicio.addEventListener('submit',async(event)=>{
                 event.preventDefault()
-                const serviciosSeleccionados=arry.from(formularioSeleccionServicio.
+                const serviciosSeleccionados=array.from(formularioSeleccionServicio.
                 elements['servicios']).filter(checkbox=>checkbox.checked)
                 .map(checkbox=>checkbox.value)
                 const fh=formularioSeleccionServicio.elements['fechaHora'].value
 
                 const xhrguardarservicio=new XMLHttpRequest()
-                xhrguardarservicio.open('POST','/obtener-servicios-usuario',true)
+                xhrguardarservicio.open('POST','/guardar-servicios-usuario',true)
                 xhrguardarservicio.setRequestHeader('content-Type','application/json')
-                xhrguardarservicio.onreadystatechange=funtion()={
-                    if((xhrguardarservicio.readyState===4) && (xhrguar.status===200)){
-                     alert('servicios guardados')
-                     window.location.reload()
-
-                       
+                xhrguardarservicio.onreadystatechange=function(){
+                    if((xhrguardarservicio.readyState===4) && (xhrguardarservicio.status===200)){
+                    alert("servicios guardados")
+                    window.location.reload()
                     }
                     else{
                         console.error('no se puede cargar los servicios')
@@ -121,12 +120,12 @@
                 xhrguardarservicio.send(JSON.stringify({
                     servicios: serviciosSeleccionados,
                     fechaHora: fh
+
+
                 }))
 
                 })
             })
-
-        })
 </script>
 </body>
 </html>

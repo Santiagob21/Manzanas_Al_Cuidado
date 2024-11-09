@@ -109,7 +109,7 @@ app.post('../public/usuario.html/obtener-servicios-usuario',async (req, res)=>{
     try{
         const conect = await mysql2.createConnection(db)
         //consulta para obtener el nombre de los servicios asociados a la manzana del usuario mediante el documeento o el nombre
-        const [datos] = await conect.execute('SELECT servicios.Nombre FROM servicios  INNER JOIN manzana_servicios ON manzanas_servicios.Id_ServiciosINNER JOIN manzanas ON manzanas.Id_M=usuario')
+        const [datos] = await conect.execute('')
         console.log(datos)
         res.json({servicios: datos.map(hijo=>hijo.Nombre)})
         await conect.end()    
@@ -121,9 +121,23 @@ app.post('../public/usuario.html/obtener-servicios-usuario',async (req, res)=>{
 })
 //enviar servicios
 app.post('../public/usuario.html/guardar-servicios-usuario',async (req,res)=>{
- const usuario=req.session.usuario
- const Documento=req.session.Documento
- const {servicios,fechaHora}=req.body
+const usuario=req.session.usuario
+const Documento=req.session.Documento
+const {servicios,fechaHora}=req.body
+console.log(servicios)
+try{
+const conect=await mysql2.createConnection(db)
+const [IDS]=await conect.execute('SELECT servicios.id_Servicio FROM servicios WHERE servicios.Nombre=?',[servicios])
+const [IDU]=await conect.execute('SELECT usuario.Id FROM usuario WHERE usuario.Documento=? ',[Documento]) 
+await conect.execute('INSERT  INTO solicitudes (Fecha_asistencia, id_solicitud, fk_id_servicios) VALUES (?,?,?)',[fechaHora, IDS[0],IDU[0]])
+res.status(200).send('servicio guardado') 
+await conect.end()
+}
+catch(error){
+console.error('error en el servidor: ', error)
+res.status(500).send('error en el servidor');
+}
+
 })
 // Apertura del servidor
 app.listen(3000, ()=>{
