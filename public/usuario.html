@@ -75,7 +75,8 @@
             xhrobtener.open('POST','/obtener-servicios-usuario',true)
             xhrobtener.setRequestHeader('content-Type','application/json')
             xhrobtener.onreadystatechange=function(){
-                if((xhrobtener.readyState===4) && (xhrobtener.status===200)){
+                if((xhrobtener.readyState===4) {}
+                (xhrobtener.status===200)){
                 const data = JSON.parse(xhrobtener.responseText)
                     listaServicios.innerHTML=''
                     data.servicios.forEach(servicio => {
@@ -131,4 +132,6 @@
 </html>
 
 <!-- consulta bbdd
+80c94 cl 65d sur
+
 id servicio y id usuario  -->

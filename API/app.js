@@ -105,11 +105,11 @@ app.get('/obtener-usuario',(req, res)=>{
 //obtener usuario
 app.post('../public/usuario.html/obtener-servicios-usuario',async (req, res)=>{
 
-    const usuario=req.session.usuario
+    req.session.Documento=Documento
     try{
         const conect = await mysql2.createConnection(db)
         //consulta para obtener el nombre de los servicios asociados a la manzana del usuario mediante el documeento o el nombre
-        const [datos] = await conect.execute('')
+        const [datos] = await conect.execute('SELECT ser.Nombre_servicio FROM servicios ser JOIN manzanas_servicios ms ON ser.id_servicio = ms.fk_id_servicio JOIN manzanas m ON ms.Id_M2 = m.Id_M  JOIN usuario us ON us.id_M1 = m.Id_M WHERE Documento = (?)', [Docuemento])
         console.log(datos)
         res.json({servicios: datos.map(hijo=>hijo.Nombre)})
         await conect.end()    
@@ -143,6 +143,5 @@ res.status(500).send('error en el servidor');
 app.listen(3000, ()=>{
     console.log('Servidor Node.js escuchando')
 })
-
 
 

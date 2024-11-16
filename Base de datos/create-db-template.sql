@@ -125,5 +125,18 @@ SELECT * FROM servicios
 SELECT * FROM manzanas_servicios
 
 
-//consulta para obtener el nombre de los servicios asociados a la manzana del usuario mediante el documeento o el nombre
-SELECT 
+/* //consulta para obtener el nombre de los servicios asociados a la manzana del usuario mediante el documeento o el nombre */
+
+
+SELECT ser.Nombre_servicio 
+FROM servicios ser
+JOIN manzanas_servicios ms ON ser.id_servicio = ms.fk_id_servicio
+JOIN manzanas m ON ms.Id_M2 = m.Id_M 
+JOIN usuario us ON us.id_M1 = m.Id_M
+WHERE Documento = 1111
+
+
+
+
+
+
