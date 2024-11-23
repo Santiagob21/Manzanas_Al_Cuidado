@@ -5,6 +5,7 @@ const path= require('path') //para manejo de rutas
 const moment=require('moment') //biblioteca para manejar fechas y horas 
 const session=require('express-session') //middleware para manejar sesiones de usuario 
 const { connect }=require ('http2')
+const { console }=require ('inspector')
 const app=express()
 
 // Middleware
@@ -33,6 +34,7 @@ const db= {
 app.post('/crear', async (req, res) => {
     const { Nombre, Tipo, Documento, Man } = req.body;
     try {
+        //verificar el usuario
         const conect = await mysql2.createConnection(db);
         const [veri] = await conect.execute('SELECT * FROM usuario WHERE Documento=? AND Tipo=?', [Documento, Tipo]);
 
@@ -41,7 +43,7 @@ app.post('/crear', async (req, res) => {
                 <script>
                 window.onload=function(){
                     alert("Usuario ya existe");
-                    window.location.href='../inicio.html';
+                    window.location.href='./inicio.html';
                 }
                 </script>
                 `);
@@ -51,10 +53,11 @@ app.post('/crear', async (req, res) => {
                 <script>
                 window.onload=function(){
                     alert("Datos guardados");
-                    window.location.href='../inicio.html';
+                    window.location.href='./inicio.html';
                 }
                 </script>
-                `);
+                `)
+                await conect.end()
         }
         await conect.end();
     } catch (error) {
@@ -104,8 +107,8 @@ app.get('/obtener-usuario',(req, res)=>{
 })
 //obtener usuario
 app.post('../public/usuario.html/obtener-servicios-usuario',async (req, res)=>{
-
-    req.session.Documento=Documento
+    const Docuemento=req.session.Docuemento
+    //req.session.Documento=Documento
     try{
         const conect = await mysql2.createConnection(db)
         //consulta para obtener el nombre de los servicios asociados a la manzana del usuario mediante el documeento o el nombre
@@ -138,6 +141,54 @@ console.error('error en el servidor: ', error)
 res.status(500).send('error en el servidor');
 }
 
+})
+//obtener los servicios del usuario
+app.post('/obtener-servicios-guardados',async(req,res)=>{
+    const Docuemento=req.session.Docuemento
+    try{
+        const conect = await mysql2.createConnection(db)
+        const [IDU]=await conect.execute('',[Docuemento])
+        const [serviciosGuardadosData]=await conect.execute(''[IDU(0).id])
+        const serviciosGuardadosFiltrados=serviciosGuardadosData.map(servicio=>({
+            Nombre:servicio.Nombre,
+            Fecha:servicio.Fecha,
+            id:servicio.Id_solicitud
+        }))
+        res.json({
+            serviciosGuardados:serviciosGuardadosFiltrados
+        })
+        await conect.end()
+    }
+    catch(error){
+        console.error('error en el servidor', error)
+        res.status(500).send('error en el servidor')
+    }
+})
+//eliminar servicio
+app.delete('/eliminar/id', async (req,res)=>{
+    const servicioId=req.params.id
+    try{
+        const conect = await mysql2.createConnection(db)
+        await conect.execute('DELETE FROM solicitudes WHERE Id_solicitud=?',[servicioId])
+        res.send().status(200)
+        await conect.end()
+    }
+    catch(error){
+        console.error('error en el servidor:', error)
+        res.status(500).send('error en el servidor')
+    }
+})
+//cerrar sesion
+app.post('/cerrar', (req, res)=>{
+    req.session.destroy((err)=>{
+        if(err){
+            console.error("error al cerrar", err)
+            res.status(500).send("error al cerrar")
+        }
+        else{
+            res.status(200).send('sesion cerrada')
+        }
+    })
 })
 // Apertura del servidor
 app.listen(3000, ()=>{
