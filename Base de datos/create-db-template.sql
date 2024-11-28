@@ -135,6 +135,10 @@ JOIN manzanas m ON ms.Id_M2 = m.Id_M
 JOIN usuario us ON us.id_M1 = m.Id_M
 WHERE Documento = 1111
 
+/* consulta linea 152 api  */
+SELECT servicios.Nombre_servicio,
+solicitudes.Fecha_asistencia,
+solicitudes.id_solicitud 
 
 
 
