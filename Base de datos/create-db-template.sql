@@ -137,12 +137,16 @@ WHERE Documento = 1111
 /* consulta para obtener nombre de servicio, fecha y id de solicitud */
 SELECT servicios.Nombre_servicio,
 solicitudes.Fecha_asistencia,
-solicitudes.id_solicitud 
-FROM servicios 
+solicitudes.id_solicitud
+FROM servicios
 INNER JOIN manzanas_servicios ON servicios.id_servicio = manzanas_servicios.fk_id_servicio
 INNER JOIN solicitudes ON manzanas_servicios.fk_id_servicio = solicitudes.id_solicitud
+WHERE 
+
+
 
 
 /* nombre de de la manzana segun nombre */
-SELECT manzanas.Nombre FROM usuario INNER JOIN manzanas ON usuario.id_mujer = manzanas.Id_M WHERE usuario.Nombre="trujillo"
+SELECT manzanas.Nombre FROM usuario INNER JOIN manzanas ON usuario.id_mujer = manzanas.Id_M WHERE usuario.Nombre="marty"
+
 

@@ -1,203 +1,216 @@
- const express = require('express') //para crear servidor 
-const bodyParser = require('body-parser') //mildware para analizar el cuerpo de solicitudes 
-const mysql2 = require('mysql2/promise') // conceccion y promesas de sql 
-const path= require('path') //para manejo de rutas 
-const moment=require('moment') //biblioteca para manejar fechas y horas 
-const session=require('express-session') //middleware para manejar sesiones de usuario 
-const {connect }=require ('http2')
-const { console }=require ('inspector')
-const app=express()
+const express = require('express'); // para crear servidor 
+const bodyParser = require('body-parser'); // middleware para analizar el cuerpo de solicitudes 
+const mysql2 = require('mysql2/promise'); // conexión y promesas de SQL 
+const path = require('path'); // para manejo de rutas 
+const moment = require('moment'); // biblioteca para manejar fechas y horas 
+const session = require('express-session'); // middleware para manejar sesiones de usuario 
+const app = express();
 
 // Middleware
-app.use(bodyParser.urlencoded({ extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(express.static(__dirname))
-app.use(express.static(path.join(__dirname)))
+app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname)));
 
-//configurar usuario
+// Configurar usuario
 app.use(session({
     secret: 'Miapp',
-    resave:false,
-    saveUninitialized:true
-}))
+    resave: false,
+    saveUninitialized: true
+}));
 
-//Conexion BBDD
-const db= {
-    host:'localhost',
-    user:'root',
-    password:'',
-    database:'MANZANAS_DEL_CUIDADO'
-}
+// Conexión a la base de datos
+const db = {
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'MANZANAS_DEL_CUIDADO'
+};
 
-// Registrar usuario
+// Obtener los servicios relacionados con la manzana del usuario
+app.post('/obtener-servicios-usuario', async (req, res) => {
+    const Documento = req.session.Documento;
 
-app.post('/crear', async (req, res) => {
-    const { Nombre, Tipo, Documento,Man} = req.body;
     try {
-        //verificar el usuario
         const conect = await mysql2.createConnection(db);
-        const [veri] = await conect.execute('SELECT * FROM usuario WHERE Documento=? AND Tipo=?', [Documento, Tipo]);
 
-        if (veri.length > 0) {
-            res.status(409).send(`
-                <script>
-                window.onload=function(){
-                    alert("Usuario ya existe")
-                    window.location.href='../public/inicio.html'
-                }
-                </script>
-                `)
-        } 
-        else {
-            await conect.execute('INSERT INTO usuario (Nombre, Tipo, Documento, Id_M1) VALUES (?, ?, ?, ?)', [Nombre, Tipo, Documento, Man]);
-            res.status(201).send(`
-                <script>
-                window.onload=function(){
-                    alert("Datos guardados")
-                    window.location.href='../public/inicio.html'
-                }
-                </script>
-                `)
-                
+        // Obtener el ID de la manzana a la que pertenece el usuario mediante su Documento
+        const [datos] = await conect.execute(`
+            SELECT m.Id_M
+            FROM usuario us
+            JOIN manzanas m ON us.id_M1 = m.Id_M
+            WHERE us.Documento = ?`, [Documento]
+        );
+
+        if (datos.length > 0) {
+            const idManzana = datos[0].Id_M;
+
+            // Obtener los servicios asociados a la manzana del usuario
+            const [servicios] = await conect.execute(`
+                SELECT ser.Nombre_servicio
+                FROM servicios ser
+                JOIN manzanas_servicios ms ON ser.id_servicio = ms.fk_id_servicio
+                WHERE ms.Id_M2 = ?`, [idManzana]
+            );
+
+            if (servicios.length > 0) {
+                // Devolver solo los nombres de los servicios
+                res.json({ servicios: servicios.map(servicio => servicio.Nombre_servicio) });
+            } else {
+                res.json({ servicios: [] }); // Si no hay servicios asociados
+            }
+        } else {
+            res.status(404).send('Usuario no encontrado en la manzana');
         }
+
         await conect.end();
-    } 
-    catch (error) {
+    } catch (error) {
         console.error('Error en el servidor:', error);
         res.status(500).send('Error en el servidor');
     }
 });
 
- //enviar pagina usuario
-app.post('/iniciar',async (req, res)=>{
-    const {Tipo,Documento}=req.body
-    
-    try{
-        const conect=  await mysql2.createConnection(db)
-        const [datos]=await conect.execute('SELECT * FROM usuario WHERE  Tipo=? AND Documento=?', [Tipo, Documento])
-        console.log(datos)
-        if (datos.length>0){
-           /*  const [Man]=await conect.execute('SELECT manzanas.Nombre FROM usuario INNER JOIN manzanas ON usuario.id_mujer = manzanas.Id_M WHERE usuario.Nombre=?',[Man[0].Nombre]) */
-            req.session.usuario=datos[0].Nombre
-            req.session.Documento=Documento
-            const usuario={nombre: datos[0].Nombre}
-            res.locals.usuario=usuario
-            res.locals.Documento=Documento
-            res.sendFile(path.join(__dirname,'../public/usuario.html'))
-            console.log(__dirname)
-           
-            
+// Iniciar sesión de usuario
+app.post('/iniciar', async (req, res) => {
+    const { Tipo, Documento } = req.body;
+
+    try {
+        const conect = await mysql2.createConnection(db);
+        const [datos] = await conect.execute('SELECT * FROM usuario WHERE Tipo=? AND Documento=?', [Tipo, Documento]);
+
+        if (datos.length > 0) {
+            req.session.usuario = datos[0].Nombre;
+            req.session.Documento = Documento;
+            const usuario = { nombre: datos[0].Nombre };
+            res.locals.usuario = usuario;
+            res.locals.Documento = Documento;
+            res.sendFile(path.join(__dirname, '../public/usuario.html'));
+        } else {
+            res.sendFile(path.join(__dirname, '../public/ingreso.html'));
         }
-        
-        else{
-            res.sendFile(path.join(__dirname, '../public/ingreso.html'))
-        }
-        await conect.end()
-    }
-    
-    catch(error){
-        console.error('Error en el servidor:',error)
+
+        await conect.end();
+    } catch (error) {
+        console.error('Error en el servidor:', error);
         res.status(500).send('Error en el servidor');
     }
-})
+});
 
-app.get('/obtener-usuario',(req, res)=>{
-    const usuario=req.session.usuario
-    if(usuario){
-        res.json({nombre:usuario})
+// Obtener nombre de usuario
+app.get('/obtener-usuario', (req, res) => {
+    const usuario = req.session.usuario;
+    if (usuario) {
+        res.json({ nombre: usuario });
+    } else {
+        res.status(401).send('Usuario no autenticado');
     }
-    else{
-        res.status(401).send('Usuario no autenticado')
-    }
-})
-//obtener usuario
-app.post('/obtener-servicios-usuario',async (req, res)=>{
-    const Documento = req.session.Documento
-   
-    try{
-        const conect = await mysql2.createConnection(db)
-        //consulta para obtener el nombre de los servicios asociados a la manzana del usuario mediante el documeento o el nombre
-        const [datos] = await conect.execute('SELECT ser.Nombre_servicio FROM servicios ser JOIN manzanas_servicios ms ON ser.id_servicio = ms.fk_id_servicio JOIN manzanas m ON ms.Id_M2 = m.Id_M  JOIN usuario us ON us.id_M1 = m.Id_M WHERE Documento = (?)', [Documento])
-        console.log(datos)
-        res.json({servicios: datos.map(hijo=>hijo.Nombre)})
-        await conect.end()    
-    }
-    catch{
-        console.error('Error en el servidor:', error);  // Captura y muestra el error
+});
+
+// Guardar servicios de un usuario
+app.post('/guardar-servicios-usuario', async (req, res) => {
+    const Documento = req.session.Documento;
+    const { servicios, Fecha_asistencia } = req.body;
+
+    try {
+        const conect = await mysql2.createConnection(db);
+
+        // Obtener el ID del servicio por su nombre
+        const [IDS] = await conect.execute('SELECT id_servicio FROM servicios WHERE Nombre_servicio = ?', [servicios]);
+
+        if (IDS.length === 0) {
+            return res.status(400).send('Servicio no encontrado');
+        }
+
+        // Obtener el ID de la mujer del usuario por el Documento
+        const [IDU] = await conect.execute('SELECT id_mujer FROM usuario WHERE Documento = ?', [Documento]);
+
+        if (IDU.length === 0) {
+            return res.status(400).send('Usuario no encontrado');
+        }
+
+        // Insertar la solicitud en la tabla 'solicitudes'
+        await conect.execute('INSERT INTO solicitudes (Fecha_asistencia, fk_id_servicio, id_mujer) VALUES (?, ?, ?)', [
+            Fecha_asistencia, IDS[0].id_servicio, IDU[0].id_mujer
+        ]);
+
+        res.status(200).send('Servicio guardado');
+        await conect.end();
+    } catch (error) {
+        console.error('Error en el servidor:', error);
         res.status(500).send('Error en el servidor');
     }
-})
-//enviar servicios
-app.post('/guardar-servicios-usuario',async (req,res)=>{
+});
 
-const Documento=req.session.Documento
-const {servicios,Fecha_asistencia}=req.body
-console.log(servicios)
-try{
-const conect=await mysql2.createConnection(db)
-const [IDS]=await conect.execute('SELECT servicios.id_servicio FROM servicios WHERE servicios.Nombre=?',[servicios])
-const [IDU]=await conect.execute('SELECT usuario.id_mujer FROM usuario WHERE usuario.Documento=? ',[Documento]) 
-await conect.execute('INSERT  INTO solicitudes (Fecha_asistencia, id_solicitud, fk_id_servicio) VALUES (?,?,?)',[Fecha_asistencia, IDS[0],IDU[0]])
-res.status(200).send('servicio guardado') 
-await conect.end()
-}
-catch(error){
-console.error('error en el servidor: ', error)
-res.status(500).send('error en el servidor');
-}
+// Obtener los servicios guardados de un usuario
+app.post('/obtener-servicios-guardados', async (req, res) => {
+    const Documento = req.session.Documento;
 
-})
-//obtener los servicios del usuario
-app.post('/obtener-servicios-guardados',async(req,res)=>{
-    const Documento=req.session.Documento
-    try{
-        const conect = await mysql2.createConnection(db)
-        const [IDU]=await conect.execute('SELECT usuario.Id_mujer FROM usuario WHERE usuario.Documento=?',[Documento])
-        const [serviciosGuardadosData]=await conect.execute('SELECT servicios.Nombre_servicio, solicitudes.Fecha_asistencia, solicitudes.id_solicitud  FROM servicios INNER JOIN manzanas_servicios ON servicios.id_servicio = manzanas_servicios.fk_id_servicio INNER JOIN solicitudes ON manzanas_servicios.fk_id_servicio = solicitudes.id_solicitud'[IDU[0].id])
-        const serviciosGuardadosFiltrados=serviciosGuardadosData.map(servicio=>({
-            Nombre:servicio.Nombre,
-            Fecha_asistencia:servicio.Fecha_asistencia,
-            id:servicio.id_solicitud
-        }))
-        res.json({
-            serviciosGuardados:serviciosGuardadosFiltrados
-        })
-        await conect.end()
-    }
-    catch(error){
-        console.error('error en el servidor', error)
-        res.status(500).send('error en el servidor')
-    }
-})
-//eliminar servicio
-app.delete('/eliminar/:id', async (req,res)=>{
-    const servicioId=req.params.id
-    try{
-        const conect = await mysql2.createConnection(db)
-        await conect.execute('DELETE FROM solicitudes WHERE Id_solicitud=?',[servicioId])
-        res.send().status(200)
-        await conect.end()
-    }
-    catch(error){
-        console.error('error en el servidor:', error)
-        res.status(500).send('error en el servidor')
-    }
-})
-//cerrar sesion
-app.post('/cerrar', (req, res)=>{
-    req.session.destroy((err)=>{
-        if(err){
-            console.error("error al cerrar", err)
-            res.status(500).send("error al cerrar")
+    try {
+        const conect = await mysql2.createConnection(db);
+
+        // Obtener el ID de la mujer del usuario
+        const [IDU] = await conect.execute('SELECT id_mujer FROM usuario WHERE Documento = ?', [Documento]);
+
+        if (IDU.length === 0) {
+            return res.status(400).send('Usuario no encontrado');
         }
-        else{
-            res.status(200).send('sesion cerrada')
+
+        // Consultar los servicios guardados para ese usuario
+        const [serviciosGuardadosData] = await conect.execute(`
+            SELECT servicios.Nombre_servicio, solicitudes.Fecha_asistencia, solicitudes.id_solicitud
+            FROM servicios
+            INNER JOIN manzanas_servicios ON servicios.id_servicio = manzanas_servicios.fk_id_servicio
+            INNER JOIN solicitudes ON manzanas_servicios.fk_id_servicio = solicitudes.id_solicitud
+            WHERE solicitudes.id_mujer = ?`, [IDU[0].id_mujer]
+        );
+
+        // Si no se encuentran servicios, respondemos con un array vacío
+        if (serviciosGuardadosData.length === 0) {
+            return res.json({ serviciosGuardados: [] });
         }
-    })
-})
+
+        // Filtrar y devolver los servicios con el formato adecuado
+        const serviciosGuardadosFiltrados = serviciosGuardadosData.map(servicio => ({
+            Nombre: servicio.Nombre_servicio,
+            Fecha_asistencia: servicio.Fecha_asistencia,
+            id: servicio.id_solicitud
+        }));
+
+        res.json({ serviciosGuardados: serviciosGuardadosFiltrados });
+        await conect.end();
+    } catch (error) {
+        console.error('Error en el servidor:', error);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
+// Eliminar servicio
+app.delete('/eliminar/:id', async (req, res) => {
+    const servicioId = req.params.id;
+    try {
+        const conect = await mysql2.createConnection(db);
+        await conect.execute('DELETE FROM solicitudes WHERE Id_solicitud=?', [servicioId]);
+        res.send().status(200);
+        await conect.end();
+    } catch (error) {
+        console.error('Error en el servidor:', error);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
+// Cerrar sesión
+app.post('/cerrar', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error("Error al cerrar", err);
+            res.status(500).send("Error al cerrar");
+        } else {
+            res.status(200).send('Sesión cerrada');
+        }
+    });
+});
+
 // Apertura del servidor
-app.listen(3000, ()=>{
-    console.log('Servidor Node.js escuchando')
-})
-
-
+app.listen(3000, () => {
+    console.log('Servidor Node.js escuchando en el puerto 3000');
+});
