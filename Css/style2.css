@@ -1,0 +1,128 @@
+* {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+.video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+header {
+    margin: 10px;
+    width: 98%;
+    height: 100px;
+    background: white;
+}
+
+header ul {
+    position: absolute;
+    top: 50px;
+    left: 65%;
+}
+
+header ul li {
+    padding: 2px;
+    display: inline;
+    margin-inline: 10px;
+    margin-block: 10px;
+    font-size: 22px;
+    color: aqua;
+    transition: all 1.5s;
+    font-weight: bold;
+}
+
+li:hover {
+    color: blueviolet;
+}
+
+.containerRegistro, .form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Centra verticalmente */
+}
+
+.formulario {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.formulario h1 {
+    color: blue;
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+
+.formulario label {
+    display: block;
+    margin: 10px 0;
+    font-size: 18px;
+}
+
+.formulario input, .formulario select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-around; /* Espacio entre los botones */
+    margin-top: 20px;
+}
+
+.boton {
+    background: blue;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.boton:hover {
+    background: darkblue;
+}
+
+h1 {
+    text-align: center;
+}
+
+#servicios-container, #servicios-guardados-container {
+    margin-top: 20px;
+}
+
+#tabla-servicios, #tabla-servicios-guardados {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#tabla-servicios th, #tabla-servicios-guardados th, #tabla-servicios td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
