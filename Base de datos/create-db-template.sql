@@ -125,9 +125,8 @@ SELECT * FROM servicios
 SELECT * FROM manzanas_servicios
 
 
+
 /* //consulta para obtener el nombre de los servicios asociados a la manzana del usuario mediante el documeento o el nombre */
-
-
 SELECT ser.Nombre_servicio 
 FROM servicios ser
 JOIN manzanas_servicios ms ON ser.id_servicio = ms.fk_id_servicio
@@ -135,16 +134,15 @@ JOIN manzanas m ON ms.Id_M2 = m.Id_M
 JOIN usuario us ON us.id_M1 = m.Id_M
 WHERE Documento = 1111
 
-/* consulta linea 152 api  */
+/* consulta para obtener nombre de servicio, fecha y id de solicitud */
 SELECT servicios.Nombre_servicio,
 solicitudes.Fecha_asistencia,
 solicitudes.id_solicitud 
 FROM servicios 
 INNER JOIN manzanas_servicios ON servicios.id_servicio = manzanas_servicios.fk_id_servicio
-INNER JOIN 
+INNER JOIN solicitudes ON manzanas_servicios.fk_id_servicio = solicitudes.id_solicitud
 
 
-
-
-
+/* nombre de de la manzana segun nombre */
+SELECT manzanas.Nombre FROM usuario INNER JOIN manzanas ON usuario.id_mujer = manzanas.Id_M WHERE usuario.Nombre="trujillo"
 

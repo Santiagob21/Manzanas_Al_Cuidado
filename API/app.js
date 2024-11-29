@@ -32,7 +32,7 @@ const db= {
 // Registrar usuario
 
 app.post('/crear', async (req, res) => {
-    const { Nombre, Tipo, Documento, Man } = req.body;
+    const { Nombre, Tipo, Documento,Man} = req.body;
     try {
         //verificar el usuario
         const conect = await mysql2.createConnection(db);
@@ -61,7 +61,8 @@ app.post('/crear', async (req, res) => {
                 
         }
         await conect.end();
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error en el servidor:', error);
         res.status(500).send('Error en el servidor');
     }
@@ -70,12 +71,13 @@ app.post('/crear', async (req, res) => {
  //enviar pagina usuario
 app.post('/iniciar',async (req, res)=>{
     const {Tipo,Documento}=req.body
+    
     try{
         const conect=  await mysql2.createConnection(db)
         const [datos]=await conect.execute('SELECT * FROM usuario WHERE  Tipo=? AND Documento=?', [Tipo, Documento])
         console.log(datos)
         if (datos.length>0){
-            //const [man]=await conect.execute('SELECT manzanas.Nombre FROM usuario INNER JOIN manzanas ON usuario.Id_M WHERE usuario.Nombre=?',[datos[0].Nombre])
+           /*  const [Man]=await conect.execute('SELECT manzanas.Nombre FROM usuario INNER JOIN manzanas ON usuario.id_mujer = manzanas.Id_M WHERE usuario.Nombre=?',[Man[0].Nombre]) */
             req.session.usuario=datos[0].Nombre
             req.session.Documento=Documento
             const usuario={nombre: datos[0].Nombre}
@@ -83,14 +85,16 @@ app.post('/iniciar',async (req, res)=>{
             res.locals.Documento=Documento
             res.sendFile(path.join(__dirname,'../public/usuario.html'))
             console.log(__dirname)
-            await conect.end()
+           
             
         }
+        
         else{
             res.sendFile(path.join(__dirname, '../public/ingreso.html'))
         }
         await conect.end()
     }
+    
     catch(error){
         console.error('Error en el servidor:',error)
         res.status(500).send('Error en el servidor');
@@ -125,15 +129,15 @@ app.post('/obtener-servicios-usuario',async (req, res)=>{
 })
 //enviar servicios
 app.post('/guardar-servicios-usuario',async (req,res)=>{
-const usuario=req.session.usuario
+
 const Documento=req.session.Documento
-const {servicios,fechaHora}=req.body
+const {servicios,Fecha_asistencia}=req.body
 console.log(servicios)
 try{
 const conect=await mysql2.createConnection(db)
-const [IDS]=await conect.execute('SELECT servicios.id_Servicio FROM servicios WHERE servicios.Nombre=?',[servicios])
-const [IDU]=await conect.execute('SELECT usuario.Id FROM usuario WHERE usuario.Documento=? ',[Documento]) 
-await conect.execute('INSERT  INTO solicitudes (Fecha_asistencia, id_solicitud, fk_id_servicios) VALUES (?,?,?)',[fechaHora, IDS[0],IDU[0]])
+const [IDS]=await conect.execute('SELECT servicios.id_servicio FROM servicios WHERE servicios.Nombre=?',[servicios])
+const [IDU]=await conect.execute('SELECT usuario.id_mujer FROM usuario WHERE usuario.Documento=? ',[Documento]) 
+await conect.execute('INSERT  INTO solicitudes (Fecha_asistencia, id_solicitud, fk_id_servicio) VALUES (?,?,?)',[Fecha_asistencia, IDS[0],IDU[0]])
 res.status(200).send('servicio guardado') 
 await conect.end()
 }
@@ -149,11 +153,11 @@ app.post('/obtener-servicios-guardados',async(req,res)=>{
     try{
         const conect = await mysql2.createConnection(db)
         const [IDU]=await conect.execute('SELECT usuario.Id_mujer FROM usuario WHERE usuario.Documento=?',[Documento])
-        const [serviciosGuardadosData]=await conect.execute(''[IDU(0).id])
+        const [serviciosGuardadosData]=await conect.execute('SELECT servicios.Nombre_servicio, solicitudes.Fecha_asistencia, solicitudes.id_solicitud  FROM servicios INNER JOIN manzanas_servicios ON servicios.id_servicio = manzanas_servicios.fk_id_servicio INNER JOIN solicitudes ON manzanas_servicios.fk_id_servicio = solicitudes.id_solicitud'[IDU[0].id])
         const serviciosGuardadosFiltrados=serviciosGuardadosData.map(servicio=>({
             Nombre:servicio.Nombre,
-            Fecha:servicio.Fecha,
-            id:servicio.Id_solicitud
+            Fecha_asistencia:servicio.Fecha_asistencia,
+            id:servicio.id_solicitud
         }))
         res.json({
             serviciosGuardados:serviciosGuardadosFiltrados
@@ -166,7 +170,7 @@ app.post('/obtener-servicios-guardados',async(req,res)=>{
     }
 })
 //eliminar servicio
-app.delete('/eliminar/id', async (req,res)=>{
+app.delete('/eliminar/:id', async (req,res)=>{
     const servicioId=req.params.id
     try{
         const conect = await mysql2.createConnection(db)
