@@ -139,6 +139,10 @@ WHERE Documento = 1111
 SELECT servicios.Nombre_servicio,
 solicitudes.Fecha_asistencia,
 solicitudes.id_solicitud 
+FROM servicios 
+INNER JOIN manzanas_servicios ON servicios.id_servicio = manzanas_servicios.fk_id_servicio
+INNER JOIN 
+
 
 
 
