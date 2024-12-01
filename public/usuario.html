@@ -9,7 +9,7 @@
 <body>
     <h1>Bienvenido, <span id="nombreUsuario"></span>¡</h1>
     <!-- boton para desplegar servicios -->
-    <button id="btnDesplegarServios">Desplegar servicios</button>
+    <button id="btnDesplegarServicios">Desplegar servicios</button>
     
     <!-- contenedor para mostrar los servicios del usuario -->
     <div id="servicios-container">
@@ -54,7 +54,7 @@
             const serviciosContainer = document.getElementById('servicios-container')
             const tablaServicios =document.getElementById('tabla-servicios')
             const listaServicios = document.getElementById('lista-servicios')
-            const btnDesplegarServicios = document.getElementById('btnDesplegarServios')
+            const btnDesplegarServicios = document.getElementById('btnDesplegarServicios')
             //obtener el nombre del usuario
             const xhrNombreUsuario=new XMLHttpRequest()
             xhrNombreUsuario.open('GET','/obtener-usuario',true)
@@ -108,17 +108,17 @@
                 const serviciosSeleccionados=Array.from(formularioSeleccionServicio.
                 elements['servicios']).filter(checkbox=>checkbox.checked)
                 .map(checkbox=>checkbox.value)
-                console.log(serviciosSeleccionados)
-                const fechaHora=formularioSeleccionServicio.elements['fechaHora'].value
+                console.log(serviciosSeleccionados)  
+                const fechaHora=formularioSeleccionServicio.elements['fechaHora'].value 
 
                 const xhrguardarservicio=new XMLHttpRequest()
-                xhrguardarservicio.open('POST','/guardar-servicios-usuario',true)
+                xhrguardarservicio.open('POST','/guardar-servicios-usuario',true)-
                 xhrguardarservicio.setRequestHeader('Content-Type','application/json')
                 xhrguardarservicio.onreadystatechange=function(){
                     if(xhrguardarservicio.readyState===4){
                         alert("servicios guardados")
                         window.location.reload()
-                    }
+                    } 
                     else{
                         console.error('no se puede cargar los servicios')
                      }
@@ -127,7 +127,7 @@
                     servicios: serviciosSeleccionados,
                     fechaHora: fechaHora
                 }))
-            })
+            }) 
             const btnDesplegarServiciosGuardados=document.getElementById('btnDesplegarServiciosGuardados')
             const serviciosguardadoscontainer=document.getElementById('servicios-guardados-container')
             const listaServiciosGuardados=document.getElementById('lista-servicios-guardados')
@@ -139,7 +139,7 @@
                 if(xhrdesplegarservicios.readyState===4){
                     if(xhrdesplegarservicios.status===200){
                      const data=JSON.parse(xhrdesplegarservicios.responseText)
-                     listaServiciosGuardados.innerHTML=
+                     listaServiciosGuardados.innerHTML=''
                      data.serviciosGuardados.map(servicio=>
                      `
                       <tr>
@@ -158,6 +158,7 @@
             }
             xhrdesplegarservicios.send()
             })
+            /* CERRAR SESION */
             const btnCerrar=document.getElementById('btnCerrarSesion')
             btnCerrar.addEventListener('click',()=>{
                 const xhrcerrar=new XMLHttpRequest()
@@ -183,6 +184,7 @@
                 }
             }
         })
+        /* ELIMINAR SERVICIO  */
         function eliminarServicio(id){
            const xhreliminar=new XMLHttpRequest()
            xhreliminar.open('DELETE',`/eliminar/${id}`,true) 
@@ -204,7 +206,3 @@
 </body>
 </html>
 
-<!-- consulta bbdd
-80c94 cl 65d sur
-
-id servicio y id usuario  -->

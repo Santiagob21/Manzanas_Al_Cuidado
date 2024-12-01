@@ -88,10 +88,8 @@ CREATE TABLE solicitudes (
   Fecha_asistencia date DEFAULT NULL,
   Nombre_establecimiento varchar(50) DEFAULT NULL,
   Responsable_establecimiento varchar(30) DEFAULT NULL,
-  Direccion_establecimiento text DEFAULT NULL,
-  fk_id_servicio int(5) DEFAULT NULL,
-  FOREIGN KEY (fk_id_servicio) REFERENCES servicios (id_servicio)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  Direccion_establecimiento text DEFAULT NULL
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE usuario (
   id_mujer int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -105,8 +103,10 @@ CREATE TABLE usuario (
   Direccion_mujer text DEFAULT NULL,
   Ocupacion varchar(30) DEFAULT NULL,
   Id_M1 int(5) DEFAULT NULL,
-  FOREIGN KEY (Id_M1) REFERENCES manzanas (Id_M)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  FOREIGN KEY (Id_M1) REFERENCES manzanas (Id_M),
+  fk_id_solicitud INT(5) DEFAULT NULL,
+  FOREIGN KEY (fk_id_solicitud) REFERENCES solicitudes (id_solicitud)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
 COMMIT;
@@ -127,7 +127,7 @@ SELECT * FROM manzanas_servicios
 
 
 /* //consulta para obtener el nombre de los servicios asociados a la manzana del usuario mediante el documeento o el nombre */
-SELECT ser.Nombre_servicio 
+SELECT ser.Nombre_servicio, ser.Descripcion
 FROM servicios ser
 JOIN manzanas_servicios ms ON ser.id_servicio = ms.fk_id_servicio
 JOIN manzanas m ON ms.Id_M2 = m.Id_M 
@@ -140,13 +140,25 @@ solicitudes.Fecha_asistencia,
 solicitudes.id_solicitud
 FROM servicios
 INNER JOIN manzanas_servicios ON servicios.id_servicio = manzanas_servicios.fk_id_servicio
-INNER JOIN solicitudes ON manzanas_servicios.fk_id_servicio = solicitudes.id_solicitud
-WHERE 
+INNER JOIN manzanas ON manzanas_servicios.Id_M2 = manzanas.Id_M
+INNER JOIN usuario ON manzanas.Id_M = usuario.id_mujer
+INNER JOIN solicitudes ON usuario.id_mujer = solicitudes.id_solicitud
 
 
+
+
+INSERT INTO solicitudes (Fecha_asistencia, fk_id_solicitud)
+    SELECT Fecha_asistencia, fk_id_solicitud
+    INNER JOIN INNER JOIN manzanas_servicios ON servicios.id_servicio = manzanas_servicios.fk_id_servicio
+    INNER JOIN manzanas ON manzanas_servicios.Id_M2 = manzanas.Id_M
+    INNER JOIN usuario ON manzanas.Id_M = usuario.id_mujer
+    INNER JOIN solicitudes ON usuario.id_mujer = solicitudes.id_solicitud VALUES (1,2)
+
+   
 
 
 /* nombre de de la manzana segun nombre */
-SELECT manzanas.Nombre FROM usuario INNER JOIN manzanas ON usuario.id_mujer = manzanas.Id_M WHERE usuario.Nombre="marty"
+SELECT manzanas.Nombre FROM usuario INNER JOIN manzanas ON usuario.id_mujer = manzanas.Id_M WHERE usuario.Nombre="juan david"
+
 
 
