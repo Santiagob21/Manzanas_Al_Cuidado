@@ -129,10 +129,10 @@ JOIN usuario us ON us.id_M1 = m.Id_M
 WHERE Documento = 1111
 
 /* consulta para obtener nombre de servicio, fecha y id de solicitud */
-INSERT INTO usuario_servicios (id_mujer1, id_servicio1, Fecha_asistencia) VALUES (?,?,?)
+INSERT INTO usuario_servicios (id_servicio1, Fecha_asistencia) VALUES (?,?)
 
 
-
+SELECT * FROM usuario_servicios
 
  
  

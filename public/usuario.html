@@ -130,36 +130,41 @@
                     fechaHora: fechaHora
                 }))
             }) 
-            const btnDesplegarServiciosGuardados=document.getElementById('btnDesplegarServiciosGuardados')
-            const serviciosguardadoscontainer=document.getElementById('servicios-guardados-container')
-            const listaServiciosGuardados=document.getElementById('lista-servicios-guardados')
+            const btnDesplegarServiciosGuardados = document.getElementById('btnDesplegarServiciosGuardados');
+const serviciosguardadoscontainer = document.getElementById('servicios-guardados-container');
+const listaServiciosGuardados = document.getElementById('lista-servicios-guardados');
 
-            btnDesplegarServiciosGuardados.addEventListener('click',()=>{
-                const xhrdesplegarservicios=new XMLHttpRequest()
-                xhrdesplegarservicios.open('POST','/obtener-servicios-guardados', true)
-                xhrdesplegarservicios.onreadystatechange=function(){
-                if(xhrdesplegarservicios.readyState===4){
-                    if(xhrdesplegarservicios.status===200){
-                     const data=JSON.parse(xhrdesplegarservicios.responseText)
-                     listaServiciosGuardados.innerHTML=''
-                     data.serviciosGuardados.map(servicio=>
-                     `
-                      <tr>
-                        <td>${servicio.Nombre}</td>
-                        <td>${servicio.Fecha}</td>
-                        <td><button onclick="eliminarServicio(${servicio.id})">Eliminar</button></td>
-                      </tr>
-                     `
-                     ).join('')
-                     serviciosguardadoscontainer.style.display='block'
-                    }
-                    else{
-                        console.error('no se pueden pedir los servicios')
-                    }
-                }
+btnDesplegarServiciosGuardados.addEventListener('click', () => {
+    const xhrdesplegarservicios = new XMLHttpRequest();
+    xhrdesplegarservicios.open('POST', '/obtener-servicios-guardados', true);
+    xhrdesplegarservicios.onreadystatechange = function () {
+        if (xhrdesplegarservicios.readyState === 4) {
+            if (xhrdesplegarservicios.status === 200) {
+                const data = JSON.parse(xhrdesplegarservicios.responseText);
+                listaServiciosGuardados.innerHTML = ''; // Limpiar contenido previo
+
+                // Iterar sobre los servicios guardados y agregar filas a la tabla
+                const serviciosHTML = data.serviciosGuardados.map(servicio => {
+                    return `
+                        <tr>
+                            <td>${servicio.Nombre}</td>
+                            <td>${servicio.Fecha_asistencia}</td>
+                            <td><button onclick="eliminarServicio(${servicio.id_servicio})">Eliminar</button></td>
+                        </tr>
+                    `;
+                }).join('');
+
+                // Insertar los nuevos servicios en el contenedor de la lista
+                listaServiciosGuardados.innerHTML = serviciosHTML;
+                serviciosguardadoscontainer.style.display = 'block'; // Mostrar el contenedor de servicios guardados
+            } else {
+                console.error('No se pueden obtener los servicios');
             }
-            xhrdesplegarservicios.send()
-            })
+        }
+    };
+    xhrdesplegarservicios.send();
+});
+
             /* CERRAR SESION */
             const btnCerrar=document.getElementById('btnCerrarSesion')
             btnCerrar.addEventListener('click',()=>{

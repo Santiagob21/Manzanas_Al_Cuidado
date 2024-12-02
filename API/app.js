@@ -137,46 +137,55 @@ app.post('/guardar-servicios-usuario', async (req, res) => {
             return res.status(400).send('Usuario no encontrado');
         }
 
-        // Insertar una solicitud en la tabla 'solicitudes' por cada servicio
+        // Usar un bucle for para esperar todas las operaciones asincrónicas
+        const promises = servicios.map(async (servicio) => {
+            // Obtener el id_servicio para cada servicio
+            const [servicioResult] = await conect.execute('SELECT id_servicio FROM servicios WHERE Nombre_servicio = ?', [servicio]);
 
-        servicios.forEach((servicio) => {
-            conect.execute('SELECT id_servicio FROM servicios WHERE Nombre_servicio = ?', [servicio])
-                .then(res =>
-                   conect.execute('INSERT INTO usuario_servicios (id_mujer1, id_servicio1, Fecha_asistencia) VALUES (?,?,?)' [fechaHora, res[0].id_servicio]))
-                })
+            if (servicioResult.length > 0) {
+                // Insertar en la tabla usuario_servicios
+                await conect.execute('INSERT INTO usuario_servicios (Fecha_asistencia, id_servicio1) VALUES (?, ?)', [fechaHora, servicioResult[0].id_servicio]);
+            } else {
+                throw new Error(`Servicio ${servicio} no encontrado`);
+            }
+        });
+
+        // Esperar a que todas las promesas se resuelvan
+        await Promise.all(promises);
 
         res.status(200).send('Servicio guardado');
-
     } catch (error) {
         console.error('Error en el servidor:', error);
         res.status(500).send('Error en el servidor');
     }
 });
 
+
 // Obtener los servicios guardados de un usuario
 app.post('/obtener-servicios-guardados', async (req, res) => {
     const Documento = req.session.Documento;
-     console.log(Documento, 80) 
+    console.log(Documento, 80); 
+
     try {
         const conect = await mysql2.createConnection(db);
 
         // Obtener el ID de la mujer del usuario
         const [IDU] = await conect.execute('SELECT id_mujer FROM usuario WHERE Documento = ?', [Documento]);
-        console.log(IDU[0])
+        console.log(IDU[0]);
 
         if (IDU.length === 0) {
             return res.status(400).send('Usuario no encontrado');
         }
 
-        // Consultar los servicios guardados para ese usuario
-        const [serviciosGuardadosData] = await conect.execute('SELECT servicios.Nombre_servicio, solicitudes.Fecha_asistencia, solicitudes.id_solicitud FROM servicios INNER JOIN manzanas_servicios ON servicios.id_servicio = manzanas_servicios.fk_id_servicio INNER JOIN manzanas ON manzanas_servicios.Id_M2 = manzanas.Id_M INNER JOIN usuario ON manzanas.Id_M = usuario.id_mujer INNER JOIN solicitudes ON usuario.id_mujer = solicitudes.id_solicitud WHERE solicitudes.id_solicitud = ?', [IDU[0].id_mujer]);
-        console.log(serviciosGuardadosData)
-       
+        // Consultar los servicios guardados para ese usuario, incluyendo detalles del servicio
+        const [serviciosGuardadosData] = await conect.execute('SELECT usuario.Nombre, usuario_servicios.id_servicio1, usuario_servicios.Fecha_asistencia FROM usuario INNER JOIN usuario ON usuario.id_mujer = usuario_servicios.id_mujer1 WHERE usuario_servicios.id_mujer = ?'[IDU[0].id_mujer]);
+        console.log(serviciosGuardadosData);
+
         // Filtrar y devolver los servicios con el formato adecuado
         const serviciosGuardadosFiltrados = serviciosGuardadosData.map(servicio => ({
             Nombre: servicio.Nombre_servicio,
             Fecha_asistencia: servicio.Fecha_asistencia,
-            id: servicio.id_solicitud
+            id_servicio: servicio.id_servicio1 // Usamos el id_servicio1 como ID del servicio
         }));
 
         res.json({ serviciosGuardados: serviciosGuardadosFiltrados });
