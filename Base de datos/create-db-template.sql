@@ -18,12 +18,12 @@ CREATE TABLE manzanas (
   Localidad varchar(30) DEFAULT NULL,
   Direccion_manzana VARCHAR(30) DEFAULT NULL
  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+INSERT INTO manzanas (Id_M, Nombre, Localidad, Direccion_manzana) 
+VALUES
+( 1, 'Bosa' ,'Bosa', 'direccion 1'),
+( 2, 'Suba' ,'Suba', 'direccion 2'),
+( 3, 'Chapinero' ,'Chapinero', 'direccion 3')
 
-INSERT INTO manzanas (Id_M, Nombre, Localidad, Direccion_manzana) VALUES( 1, 'Bosa' ,'Bosa', 'direccion 1')
-
-INSERT INTO manzanas (Id_M, Nombre, Localidad, Direccion_manzana) VALUES( 2, 'Suba' ,'Suba', 'direccion 2')
-
-INSERT INTO manzanas (Id_M, Nombre, Localidad, Direccion_manzana) VALUES( 3, 'Chapinero' ,'Chapinero', 'direccion 3')
 
 CREATE TABLE servicios (
   id_servicio int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -31,22 +31,16 @@ CREATE TABLE servicios (
   Tipo_servicio varchar(30) DEFAULT NULL,
   Descripcion varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-INSERT INTO servicios (id_servicio, Nombre_Servicio, Tipo_servicio, Descripcion) VALUES (3, 'estudiar', 'estudia', 'adquirir conocimiento')
-
-INSERT INTO servicios (id_servicio, Nombre_Servicio, Tipo_servicio, Descripcion) VALUES (4, 'aprender' , 'aprender', 'adquirir conocimiento')
-
-INSERT INTO servicios (id_servicio, Nombre_Servicio, Tipo_servicio, Descripcion) VALUES (5, 'emplearse', 'trabajo', 'conseguir trabajo' )
-
-INSERT INTO servicios (id_servicio, Nombre_Servicio, Tipo_servicio, Descripcion) VALUES (6, 'descansar', 'oseo', 'tiempo de relajo' )
-
-INSERT INTO servicios (id_servicio, Nombre_Servicio, Tipo_servicio, Descripcion) VALUES (7, 'ejercitarse', 'salud', 'ponerse mamado' )
-
-INSERT INTO servicios (id_servicio, Nombre_Servicio, Tipo_servicio, Descripcion) VALUES (8, 'asesoria juridica', 'juridica', 'recibir consejos juridicos')
-
-INSERT INTO servicios (id_servicio, Nombre_Servicio, Tipo_servicio, Descripcion) VALUES (9, 'asesoria pscologica', 'psicologia', 'recibir consejos psicologicos' )
-
-INSERT INTO servicios (id_servicio, Nombre_Servicio, Tipo_servicio, Descripcion) VALUES (10, 'lavar ropa', 'aseo', 'tener sus prendas limpias')
+INSERT INTO servicios (id_servicio, Nombre_Servicio, Tipo_servicio, Descripcion) 
+VALUES 
+(3, 'estudiar', 'estudia', 'adquirir conocimiento'),
+(4, 'aprender' , 'aprender', 'adquirir conocimiento'),
+(5, 'emplearse', 'trabajo', 'conseguir trabajo' ),
+(6, 'descansar', 'oseo', 'tiempo de relajo' ),
+(7, 'ejercitarse', 'salud', 'ponerse mamado' ),
+(8, 'asesoria juridica', 'juridica', 'recibir consejos juridicos'),
+(9, 'asesoria pscologica', 'psicologia', 'recibir consejos psicologicos' ),
+(10, 'lavar ropa', 'aseo', 'tener sus prendas limpias')
 
 
 CREATE TABLE manzanas_servicios (
@@ -55,41 +49,30 @@ CREATE TABLE manzanas_servicios (
   FOREIGN KEY (Id_M2) REFERENCES manzanas (Id_M), 
   FOREIGN KEY (fk_id_servicio) REFERENCES servicios (id_servicio)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+INSERT INTO manzanas_servicios (Id_M2, fk_id_servicio) 
+VALUES 
+(1,3),
+(1,4),
+(1,5),
+(1,6),
+(2,10),
+(2,9),
+(2,8),
+(2,7),
+(3,3),
+(3,5),
+(3,6),
+(3,8)
 
-
-
-INSERT INTO manzanas_servicios (Id_M2, fk_id_servicio) VALUES (1,3)
-
-INSERT INTO manzanas_servicios (Id_M2, fk_id_servicio) VALUES (1,4)
-
-INSERT INTO manzanas_servicios (Id_M2, fk_id_servicio) VALUES (1,5)
-
-INSERT INTO manzanas_servicios (Id_M2, fk_id_servicio) VALUES (1,6)
-
-INSERT INTO manzanas_servicios (Id_M2, fk_id_servicio) VALUES (2,10)
-
-INSERT INTO manzanas_servicios (Id_M2, fk_id_servicio) VALUES (2,9)
-
-INSERT INTO manzanas_servicios (Id_M2, fk_id_servicio) VALUES (2,8)
-
-INSERT INTO manzanas_servicios (Id_M2, fk_id_servicio) VALUES (2,7)
-
-INSERT INTO manzanas_servicios (Id_M2, fk_id_servicio) VALUES (3,3)
-
-INSERT INTO manzanas_servicios (Id_M2, fk_id_servicio) VALUES (3,5)
-
-INSERT INTO manzanas_servicios (Id_M2, fk_id_servicio) VALUES (3,6)
-
-INSERT INTO manzanas_servicios (Id_M2, fk_id_servicio) VALUES (3,8)
 
 CREATE TABLE solicitudes (
   id_solicitud int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT,
   Municipios varchar(30) DEFAULT NULL,
-  Fecha_asistencia date DEFAULT NULL,
   Nombre_establecimiento varchar(50) DEFAULT NULL,
   Responsable_establecimiento varchar(30) DEFAULT NULL,
   Direccion_establecimiento text DEFAULT NULL
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
 CREATE TABLE usuario (
   id_mujer int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -108,6 +91,13 @@ CREATE TABLE usuario (
   FOREIGN KEY (fk_id_solicitud) REFERENCES solicitudes (id_solicitud)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+CREATE TABLE usuario_servicios (
+  id_mujer1 INT(5) DEFAULT NULL,
+  FOREIGN KEY (id_mujer1) REFERENCES usuario (id_mujer),
+  id_servicio1 INT(5) DEFAULT NULL,
+  FOREIGN KEY (id_servicio1) REFERENCES servicios (id_servicio),
+  Fecha_asistencia date DEFAULT NULL
+)
 
 COMMIT;
 
@@ -124,6 +114,10 @@ SELECT * FROM servicios
 
 SELECT * FROM manzanas_servicios
 
+SELECT * FROM solicitudes
+
+/* nombre de de la manzana segun nombre */
+SELECT manzanas.Nombre FROM usuario INNER JOIN manzanas ON usuario.id_mujer = manzanas.Id_M WHERE usuario.Nombre="juan david"
 
 
 /* //consulta para obtener el nombre de los servicios asociados a la manzana del usuario mediante el documeento o el nombre */
@@ -135,30 +129,14 @@ JOIN usuario us ON us.id_M1 = m.Id_M
 WHERE Documento = 1111
 
 /* consulta para obtener nombre de servicio, fecha y id de solicitud */
-SELECT servicios.Nombre_servicio,
-solicitudes.Fecha_asistencia,
-solicitudes.id_solicitud
-FROM servicios
-INNER JOIN manzanas_servicios ON servicios.id_servicio = manzanas_servicios.fk_id_servicio
-INNER JOIN manzanas ON manzanas_servicios.Id_M2 = manzanas.Id_M
-INNER JOIN usuario ON manzanas.Id_M = usuario.id_mujer
-INNER JOIN solicitudes ON usuario.id_mujer = solicitudes.id_solicitud
+INSERT INTO usuario_servicios (id_mujer1, id_servicio1, Fecha_asistencia) VALUES (?,?,?)
 
 
 
 
-INSERT INTO solicitudes (Fecha_asistencia, fk_id_solicitud)
-    SELECT Fecha_asistencia, fk_id_solicitud
-    INNER JOIN INNER JOIN manzanas_servicios ON servicios.id_servicio = manzanas_servicios.fk_id_servicio
-    INNER JOIN manzanas ON manzanas_servicios.Id_M2 = manzanas.Id_M
-    INNER JOIN usuario ON manzanas.Id_M = usuario.id_mujer
-    INNER JOIN solicitudes ON usuario.id_mujer = solicitudes.id_solicitud VALUES (1,2)
+ 
+ 
 
-   
-
-
-/* nombre de de la manzana segun nombre */
-SELECT manzanas.Nombre FROM usuario INNER JOIN manzanas ON usuario.id_mujer = manzanas.Id_M WHERE usuario.Nombre="juan david"
 
 
 

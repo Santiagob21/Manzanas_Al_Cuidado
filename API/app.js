@@ -142,8 +142,8 @@ app.post('/guardar-servicios-usuario', async (req, res) => {
         servicios.forEach((servicio) => {
             conect.execute('SELECT id_servicio FROM servicios WHERE Nombre_servicio = ?', [servicio])
                 .then(res =>
-                    conect.execute('INSERT INTO solicitudes (Fecha_asistencia, fk_id_servicios) VALUES (?, ?)', [fechaHora, res[0][0].id_servicio]))
-        })
+                   conect.execute('INSERT INTO usuario_servicios (id_mujer1, id_servicio1, Fecha_asistencia) VALUES (?,?,?)' [fechaHora, res[0].id_servicio]))
+                })
 
         res.status(200).send('Servicio guardado');
 

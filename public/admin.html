@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../Css/style2.css">
+</head>
+<body>
+    
+
+<button id="ELIMINAR"   class="boton " type="submit">ELIMINAR</button>
+
+<button id="ACTUALIZAR" class="boton " type="submit">ACTUALIZAR</button>
+
+<button id="btnCerrarSesion">Cerrar sesion</button>
+
+
+<script>
+
+document.addEventListener('DOMContetLoaded',()=>{
+
+    /* crear variables  */
+    const btnDesplegarUsuarios = ('ELIMIMAR')
+
+    /* Obtener datos del usuario  */
+    
+    btnDesplegarUsuarios.addEventListener('click',()=>{
+            const xhrobtenerUsuarios=new XMLHttpRequest()
+            xhrobtenerUsuarios.open('POST','/obtener-servicios-usuario',true)
+            xhrobtenerUsuarios.setRequestHeader('Content-Type','application/json')
+            xhrobtenerUsuarios.onreadystatechange=function(){
+                if(xhrobtener.readyState===4) {
+                 if(xhrobtener.status===200){
+                const data=JSON.parse(xhrobtener.responseText)
+                    listaServicios.innerHTML=''
+                    data.servicios.forEach(servicio => {
+                        const row =document.createElement('tr')
+                        row.innerHTML=`
+                        <td>${servicio}</td>
+                        <td><input type="checkbox" name ="servicios" value="${servicio}"></td>
+                        `
+                    listaServicios.appendChild(row)
+                    })
+                    serviciosContainer.style.display='block'
+                }
+                else{
+                    console.error('no se pueden cargar los servicios')
+                }}
+            } 
+            xhrobtener.send()
+            })
+
+    /* mostrar lista de usuarios  */
+
+
+    /* boton actualizar usuario */
+
+    function actualizarDatos(){
+        const xhractualizar=new XMLHttpRequest()
+        xhractualizar.open('UPDATE','', true)
+        xhractualizar.setRequestHeader('Content-Type','application/json')
+        xhractualizar.onreadystatechange=function(){
+            if(xhractualizar.readyState===4){
+                if(xhractualizar.status===200){
+                    alert("se actualizaron sus datos")
+                }
+                else{
+                    console.error("no se puede actualizar")
+                }
+                }
+            }
+           xhractualizar.send() 
+    }
+
+    /* boton eliminar usurio  */
+    
+   
+    /* cerrar sesion  */
+    const btnCerrar=document.getElementById('btnCerrarSesion')
+            btnCerrar.addEventListener('click',()=>{
+                const xhrcerrar=new XMLHttpRequest()
+                xhrcerrar.open('POST','/cerrar', true)
+                xhrcerrar.onreadystatechange=function(){
+                    if(xhrcerrar.readyState===4){
+                        if(xhrcerrar.status===200){
+                            window.location.href='../public/index.html'
+                        }
+                        else{
+                            console.error('no se pueden perdir los servicios')
+                        }
+                    }
+                }
+                xhrcerrar.send()
+            })
+            window.onload=function(){
+                window.history.forward()
+            }
+            window.onpageshow=function(event){
+                if(event.persisted){
+                    window.location.reload()
+                }
+            }
+        })
+    
+        
+        
+
+
+
+</script>
+
+</body>
+</html>
